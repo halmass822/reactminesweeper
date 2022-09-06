@@ -11,7 +11,7 @@ function getNearbyCoords(input, maxWidth, maxHeight) {
         surroundingTilesArray.forEach((x) => {
             let coordToCheck = [XCoord + x[0], YCoord + x[1]];
             //checks the resulting coordinate to see if it's within the boundaries, i.e the top left corner will not have a coordinate to its left or top
-            if(checkCoordinates(coordToCheck)){
+            if(checkCoordinates(coordToCheck, maxWidth, maxHeight)){
                 outputArray.push(coordToCheck);
             }
         })
@@ -24,8 +24,8 @@ function getNearbyCoords(input, maxWidth, maxHeight) {
 function getRandomCoords(maxWidth, maxHeight, numOfCoords) {
     let outputArray = []
     for (let i = 0; i < numOfCoords; i++) {
-        const xCoord = Math.ceil(Math.random() * (maxWidth));
-        const yCoord = Math.ceil(Math.random() * (maxHeight));
+        const xCoord = Math.ceil(Math.random() * (maxWidth -0.001));
+        const yCoord = Math.ceil(Math.random() * (maxHeight - 0.001));
         outputArray.push([xCoord,yCoord]);
     }
     return outputArray;
@@ -33,7 +33,6 @@ function getRandomCoords(maxWidth, maxHeight, numOfCoords) {
 
 //returns a 1d and 2d array of every tile object. 2d array will be used to generate the JSX elements for the grid
 export function generateGrid(width, height, numberOfBombs) {
-    try {
         let outputArray = [];
         let output2dArray = [];
         for(let i = 1; i < (height + 1); i++) {
@@ -52,15 +51,18 @@ export function generateGrid(width, height, numberOfBombs) {
             output2dArray.push(row);
         }
         const bombLocations = getRandomCoords(width, height, numberOfBombs);
-        console.log(bombLocations);
         bombLocations.forEach((bombLoc) => {
             const tileIndex = outputArray.findIndex((x) => x.coordinates[0] === bombLoc[0] && x.coordinates[1] === bombLoc[1]);
-            console.log(tileIndex);
             Object.assign(outputArray[tileIndex], {contents: "B"});
         })
+        outputArray.forEach((tile) => {
+            if (tile.hasOwnProperty("contents")) return;
+            let mineCounter = 0;
+            tile.surroundingTileCoords.forEach((nearbyCoordinate) => {
+                const nearbyTile = outputArray.find((tile) => tile.coordinates[0] === nearbyCoordinate[0] && tile.coordinates[1] === nearbyCoordinate[1]);
+                nearbyTile.contents === "B" && mineCounter++;
+            })
+            Object.assign(tile, {contents: mineCounter});   
+        })
         return [outputArray, output2dArray];
-    } catch (error) {
-        console.error(`generateTiles(${width}, ${height}, ${numberOfBombs}) error\n\n${error}`);
-    }
-    
 }
