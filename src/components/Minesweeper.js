@@ -1,12 +1,12 @@
-import React, {useState} from "react";
-import {getNearbyCoords, generateTiles} from "../utils/minesweeperLogic";
+import React, {useState, useEffect} from "react";
+import {generateGrid} from "../utils/minesweeperLogic";
 
 export default function Minesweeper() {
-    
+
     const [gridDimensions, setGridDimensions] = useState([10,10]);
     const [tileContents, setTileContents] = useState(
-        generateTiles(gridDimensions[0], gridDimensions[1])
+        generateGrid(gridDimensions[0], gridDimensions[1], 10)
         );
-
+    
     return;
 }
