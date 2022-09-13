@@ -34,9 +34,7 @@ function getRandomCoords(maxWidth, maxHeight, numOfCoords) {
 //returns a 1d and 2d array of every tile object. 2d array will be used to generate the JSX elements for the grid
 export function generateGrid(width, height, numberOfBombs) {
         let outputArray = [];
-        let output2dArray = [];
         for(let i = 1; i < (height + 1); i++) {
-            let row = [];
             for(let j = 1; j < (width + 1); j++){
                 const coords = [j,i];
                 const surroundingTiles = getNearbyCoords(coords, width, height);
@@ -45,10 +43,8 @@ export function generateGrid(width, height, numberOfBombs) {
                     surroundingTileCoords: surroundingTiles,
                     clicked: false
                 };
-                row.push(coords);
                 outputArray.push(outputTileObject);
             }
-            output2dArray.push(row);
         }
         const bombLocations = getRandomCoords(width, height, numberOfBombs);
         bombLocations.forEach((bombLoc) => {
@@ -64,5 +60,5 @@ export function generateGrid(width, height, numberOfBombs) {
             })
             Object.assign(tile, {contents: mineCounter});   
         })
-        return [outputArray, output2dArray];
+        return outputArray;
 }
