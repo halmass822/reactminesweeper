@@ -10,4 +10,4 @@ export default function Tile(props) {
     return (
         <p className="tile" style={{color: getAssociatedColor(props.contents)}} onClick={handleClick}>{(props.clicked || !props.gameRunning) && props.contents}</p>
     )
-}   
+}

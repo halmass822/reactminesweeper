@@ -9,9 +9,14 @@
     background-color: white;
 }
 
+.tile:hover {
+    border: 1px solid yellowgreen;
+  }
+
 .minesweeperGameGrid {
     display: flex;
     flex-wrap: wrap;
+    border: 1px solid black;
 }
 
 .minesweeperGame {
