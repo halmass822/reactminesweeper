@@ -4,3 +4,19 @@
     border: 1px solid black;
     margin: 0;
 }
+
+.minesweeperGameGrid {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.minesweeperGame {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.minesweeperLogo {
+    width: 3.5rem;
+    margin: 1rem;
+}

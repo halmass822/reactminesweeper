@@ -25,15 +25,18 @@ export default function Minesweeper() {
     }
 
     const clickTile = (coordinate) => {
-        console.log(`clickTile run on coordinate ${coordinate}`);
         if (!gameRunning) return;
-        console.log(`function proceeded`)
         const targetIndex = tileContents.findIndex((tile) => tile.coordinates[0] === coordinate[0] && tile.coordinates[1] === coordinate[1]);      
-        setTileContents((prev) => {
-            prev[targetIndex].clicked = true;
-            return prev;
+        let newContents = [...tileContents]
+        newContents[targetIndex].clicked = true;
+        setTileContents(() => {
+            return newContents
         });
         if(tileContents[targetIndex].contents === "B") gameOver();
+    }
+
+    const logoClick = () => {
+        !gameRunning && restartGame();
     }
 
     const gameOver = () => {
@@ -43,6 +46,8 @@ export default function Minesweeper() {
 
     const restartGame = () => {
         setTileContents(generateGrid(gridDimensions[0], gridDimensions[1], 10));
+        setLogoState(face);
+        setGameRunning(true);
     }
 
     const victory = () => {
@@ -59,6 +64,7 @@ export default function Minesweeper() {
     }
 
     useEffect( () => {
+            console.log(`useEffect run`);
             const safeTiles = tileContents.filter((tile) => {
                 return tile.contents !== "B"
             });
@@ -70,18 +76,24 @@ export default function Minesweeper() {
 
     return (
         <div className="minesweeperGame">
-            <img className="logo" src={logoState}></img>
-            <div className="gameGrid" onMouseDown={handleMouseDown} onMouseUp={handleMouseUp}>
-                {tileContents.map((tile) => {
-                    return <Tile 
-                        key={tile.coordinates}
-                        coordinates={tile.coordinates}
-                        handleClick={clickTile} 
-                        clicked={tile.clicked} 
-                        gameRunning={gameRunning} 
-                        contents={tile.contents} 
-                    />
-                })}
+            <img className="minesweeperLogo" 
+                src={logoState}
+                onClick={logoClick}
+                ></img>
+            <div className="minesweeperGameGrid"
+                style={{width: (`calc( calc( 2rem + 2px ) * ${gridDimensions[0]} )`)}}
+                onMouseDown={handleMouseDown} 
+                onMouseUp={handleMouseUp}>
+                    {tileContents.map((tile) => {
+                        return <Tile 
+                            key={tile.coordinates}
+                            coordinates={tile.coordinates}
+                            handleClick={clickTile} 
+                            clicked={tile.clicked} 
+                            gameRunning={gameRunning} 
+                            contents={tile.contents} 
+                        />
+                    })}
             </div>
         </div>
     );
