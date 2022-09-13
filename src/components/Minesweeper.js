@@ -6,7 +6,6 @@ import gameover from "./logoFaces/gameover.png";
 import victory from "./logoFaces/victory.png";
 import Tile from "./Tile";
 import "./Minesweeper.css"
-import { render } from "@testing-library/react";
 
 export default function Minesweeper() {
 
@@ -51,12 +50,12 @@ export default function Minesweeper() {
     }
 
     const restartGame = () => {
-        setTileContents(generateGrid(gridDimensions[0], gridDimensions[1], 10));
+        setTileContents(generateGrid(gridDimensions[0], gridDimensions[1], gridDimensions[2]));
         setLogoState(face);
         setGameRunning(true);
     }
 
-    const victory = () => {
+    const winner = () => {
         setGameRunning(false);
         setLogoState(victory);
     }
@@ -70,11 +69,12 @@ export default function Minesweeper() {
     }
 
     useEffect( () => {
+            if(!gameRunning) return;
             const safeTiles = tileContents.filter((tile) => {
                 return tile.contents !== "B"
             });
             if (safeTiles.every((tile) => tile.clicked)) {
-                victory();
+                winner();
             }
         },[tileContents]
     )

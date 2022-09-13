@@ -62,3 +62,30 @@ export function generateGrid(width, height, numberOfBombs) {
         })
         return outputArray;
 }
+
+export function getAssociatedColor(input) {
+    switch(input.toString()) {
+        case "1":
+            return "blue";
+        case "2":
+            return "green";
+        case "3":
+            return "orange";
+        case "4":
+            return "dark-blue";
+        case "5":
+            return "dark-red";
+        case "6":
+            return "pink";
+        case "7":
+            return "yellow";
+        case "8":
+            return "purple";
+        case "B":
+            return "red";
+        case "0":
+            return "grey";
+        default:
+            break;
+    }
+}
