@@ -3,7 +3,7 @@ function checkCoordinates(input, maxWidth, maxHeight) {
     return!(XCoordinate < 1 || XCoordinate > maxWidth || YCoordinate < 1 || YCoordinate > maxHeight)
 }
 
-function getNearbyCoords(input, maxWidth, maxHeight) {
+export function getNearbyCoords(input, maxWidth, maxHeight) {
     try {
         const [XCoord, YCoord] = [input[0], input[1]]
         const surroundingTilesArray = [[-1,0],[-1,1],[0,1],[1,1],[1,0],[1,-1],[0,-1],[-1,-1]];

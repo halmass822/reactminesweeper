@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from "react";
-import {generateGrid} from "../utils/minesweeperLogic";
+import React, { useState, useEffect } from "react";
+import { generateGrid, getNearbyCoords } from "../utils/minesweeperLogic";
 import click from "./logoFaces/click.png";
 import face from "./logoFaces/face.png";
 import gameover from "./logoFaces/gameover.png";
@@ -33,6 +33,12 @@ export default function Minesweeper() {
             return newContents
         });
         if(tileContents[targetIndex].contents === "B") gameOver();
+        if(tileContents[targetIndex].contents === 0) {
+            const surroundingTiles = getNearbyCoords(coordinate, gridDimensions[0], gridDimensions[1]);
+            surroundingTiles.forEach((coordinates) => {
+                !checkIfClicked(coordinates) && clickTile(coordinates);
+            })
+        }
     }
 
     const logoClick = () => {
@@ -64,7 +70,6 @@ export default function Minesweeper() {
     }
 
     useEffect( () => {
-            console.log(`useEffect run`);
             const safeTiles = tileContents.filter((tile) => {
                 return tile.contents !== "B"
             });
@@ -83,7 +88,9 @@ export default function Minesweeper() {
             <div className="minesweeperGameGrid"
                 style={{width: (`calc( calc( 2rem + 2px ) * ${gridDimensions[0]} )`)}}
                 onMouseDown={handleMouseDown} 
-                onMouseUp={handleMouseUp}>
+                onMouseUp={handleMouseUp}
+                onMouseOut={handleMouseUp}
+                >
                     {tileContents.map((tile) => {
                         return <Tile 
                             key={tile.coordinates}
@@ -91,7 +98,7 @@ export default function Minesweeper() {
                             handleClick={clickTile} 
                             clicked={tile.clicked} 
                             gameRunning={gameRunning} 
-                            contents={tile.contents} 
+                            contents={tile.contents}
                         />
                     })}
             </div>
