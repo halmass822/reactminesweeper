@@ -10,8 +10,8 @@ import "./Minesweeper.css"
 export default function Minesweeper() {
 
     //gridDimensions has the X and Y dimensions and the number of bombs on the grid
-    const [gridDimensions, setGridDimensions] = useState([10,10,15]);
-    const [numberOfFlags, setNumberOfFlags] = useState(0);
+    const [gridDimensions, setGridDimensions] = useState([10,10,12]);
+    const [numberOfFlags, setNumberOfFlags] = useState(12);
     const [gameRunning, setGameRunning] = useState(true);
     const [logoState, setLogoState] = useState(face);
     const [tileContents, setTileContents] = useState(
@@ -27,24 +27,32 @@ export default function Minesweeper() {
     const clickTile = (coordinate, type = "left") => {
         if (!gameRunning) return;
         const targetIndex = tileContents.findIndex((tile) => tile.coordinates[0] === coordinate[0] && tile.coordinates[1] === coordinate[1]);      
+        if(tileContents[targetIndex].clickState === "left") return;
+        if(tileContents[targetIndex].clickState === "right") {
+            type = "none";
+            setNumberOfFlags((prev) => prev + 1);
+        }
         let newContents = [...tileContents]
         newContents[targetIndex].clickState = type;
         setTileContents(() => {
             return newContents
         });
-        if(tileContents[targetIndex].contents === "B") gameOver();
-        if(tileContents[targetIndex].contents === 0) {
-            const surroundingTiles = getNearbyCoords(coordinate, gridDimensions[0], gridDimensions[1]);
-            surroundingTiles.forEach((coordinates) => {
-                getClickState(coordinates) === "none" && clickTile(coordinates, "left");
-            })
+        if(type === "right") setNumberOfFlags((prev) => prev - 1);
+        if(type === "left"){
+            if(tileContents[targetIndex].contents === "B") gameOver();
+            if(tileContents[targetIndex].contents === 0) {
+                const surroundingTiles = getNearbyCoords(coordinate, gridDimensions[0], gridDimensions[1]);
+                surroundingTiles.forEach((coordinates) => {
+                    getClickState(coordinates) === "none" && clickTile(coordinates, "left");
+                })
+            }
         }
     }
 
     const handleChangeDifficulty = ({target}) => {
         switch (target.value) {
             case "easy":
-                setGridDimensions([10,10,15]);
+                setGridDimensions([10,10,12]);
                 break;
             case "medium":
                 setGridDimensions([15,15,40]);
@@ -67,10 +75,9 @@ export default function Minesweeper() {
     }
 
     const restartGame = () => {
-        console.log(`gridDimensions: ${gridDimensions}`)
         const newGrid = generateGrid(gridDimensions[0], gridDimensions[1], gridDimensions[2]);
         setTileContents(newGrid);
-        setNumberOfFlags(0);
+        setNumberOfFlags(gridDimensions[2]);
         setLogoState(face);
         setGameRunning(true);
     }
@@ -85,7 +92,7 @@ export default function Minesweeper() {
             if (safeTiles.every((tile) => tile.clickState === "left")) {
                 winner();
             }
-        },[tileContents]
+        },[tileContents,gameRunning]
     )
 
     const winner = () => {
