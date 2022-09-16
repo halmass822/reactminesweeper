@@ -1,33 +1,34 @@
 import React, { useState, useEffect } from "react";
-import { generateGrid, getNearbyCoords } from "../utils/minesweeperLogic";
-import click from "./logoFaces/click.png";
-import face from "./logoFaces/face.png";
-import gameover from "./logoFaces/gameover.png";
-import victory from "./logoFaces/victory.png";
+import { generateGrid, getNearbyCoords, digitize } from "../utils/minesweeperLogic";
+import click from "./images/click.png";
+import face from "./images/face.png";
+import gameover from "./images/gameover.png";
+import victory from "./images/victory.png";
 import Tile from "./Tile";
 import "./Minesweeper.css"
 
 export default function Minesweeper() {
 
     //gridDimensions has the X and Y dimensions and the number of bombs on the grid
-    const [gridDimensions, setGridDimensions] = useState([10,10,10]);
+    const [gridDimensions, setGridDimensions] = useState([10,10,15]);
+    const [numberOfFlags, setNumberOfFlags] = useState(0);
     const [gameRunning, setGameRunning] = useState(true);
     const [logoState, setLogoState] = useState(face);
     const [tileContents, setTileContents] = useState(
         generateGrid(gridDimensions[0], gridDimensions[1], gridDimensions[2])
         );
 
-    const checkIfClicked = (coordinate) => {
+    const getClickState = (coordinate) => {
         if (!gameRunning) return;
         const targetIndex = tileContents.findIndex((tile) => tile.coordinates[0] === coordinate[0] && tile.coordinates[1] === coordinate[1]);
-        return tileContents[targetIndex].clicked
+        return tileContents[targetIndex].clickState
     }
 
-    const clickTile = (coordinate) => {
+    const clickTile = (coordinate, type = "left") => {
         if (!gameRunning) return;
         const targetIndex = tileContents.findIndex((tile) => tile.coordinates[0] === coordinate[0] && tile.coordinates[1] === coordinate[1]);      
         let newContents = [...tileContents]
-        newContents[targetIndex].clicked = true;
+        newContents[targetIndex].clickState = type;
         setTileContents(() => {
             return newContents
         });
@@ -35,8 +36,24 @@ export default function Minesweeper() {
         if(tileContents[targetIndex].contents === 0) {
             const surroundingTiles = getNearbyCoords(coordinate, gridDimensions[0], gridDimensions[1]);
             surroundingTiles.forEach((coordinates) => {
-                !checkIfClicked(coordinates) && clickTile(coordinates);
+                getClickState(coordinates) === "none" && clickTile(coordinates, "left");
             })
+        }
+    }
+
+    const handleChangeDifficulty = ({target}) => {
+        switch (target.value) {
+            case "easy":
+                setGridDimensions([10,10,15]);
+                break;
+            case "medium":
+                setGridDimensions([15,15,40]);
+                break;
+            case "hard":
+                setGridDimensions([20,20,75]);
+                break;        
+            default:
+                break;
         }
     }
 
@@ -50,10 +67,26 @@ export default function Minesweeper() {
     }
 
     const restartGame = () => {
-        setTileContents(generateGrid(gridDimensions[0], gridDimensions[1], gridDimensions[2]));
+        console.log(`gridDimensions: ${gridDimensions}`)
+        const newGrid = generateGrid(gridDimensions[0], gridDimensions[1], gridDimensions[2]);
+        setTileContents(newGrid);
+        setNumberOfFlags(0);
         setLogoState(face);
         setGameRunning(true);
     }
+
+    useEffect(restartGame,[gridDimensions]);
+
+    useEffect( () => {
+            if(!gameRunning) return;
+            const safeTiles = tileContents.filter((tile) => {
+                return tile.contents !== "B"
+            });
+            if (safeTiles.every((tile) => tile.clickState === "left")) {
+                winner();
+            }
+        },[tileContents]
+    )
 
     const winner = () => {
         setGameRunning(false);
@@ -68,23 +101,24 @@ export default function Minesweeper() {
         gameRunning && setLogoState(face);
     }
 
-    useEffect( () => {
-            if(!gameRunning) return;
-            const safeTiles = tileContents.filter((tile) => {
-                return tile.contents !== "B"
-            });
-            if (safeTiles.every((tile) => tile.clicked)) {
-                winner();
-            }
-        },[tileContents]
-    )
+
 
     return (
         <div className="minesweeperGame">
-            <img className="minesweeperLogo" 
-                src={logoState}
-                onClick={logoClick}
-                ></img>
+            <div className="gameBoard">
+                <div><p className="remainingBombs">{digitize(numberOfFlags)}</p></div>
+                <div><img className="minesweeperLogo" 
+                    src={logoState}
+                    onClick={logoClick}
+                    ></img></div>
+                <div><select className="difficultySelector" onChange={handleChangeDifficulty}>
+                    <option value="easy">easy</option>
+                    <option value="medium">medium</option>
+                    <option value="hard">hard</option>
+                    </select></div>
+                
+            
+            </div>
             <div className="minesweeperGameGrid"
                 style={{width: (`calc( calc( 2rem + 2px ) * ${gridDimensions[0]} )`)}}
                 onMouseDown={handleMouseDown} 
@@ -96,7 +130,7 @@ export default function Minesweeper() {
                             key={tile.coordinates}
                             coordinates={tile.coordinates}
                             handleClick={clickTile} 
-                            clicked={tile.clicked} 
+                            clickState={tile.clickState} 
                             gameRunning={gameRunning} 
                             contents={tile.contents}
                         />

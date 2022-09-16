@@ -3,6 +3,15 @@ function checkCoordinates(input, maxWidth, maxHeight) {
     return!(XCoordinate < 1 || XCoordinate > maxWidth || YCoordinate < 1 || YCoordinate > maxHeight)
 }
 
+export function digitize(input) {
+    const prefix = Number(input) < 0 ? "-" : "";
+    if (Math.abs(Number(input)) < 10) {
+        return `${prefix}0${Math.abs(input)}`
+    } else {
+        return `${prefix}${Math.abs(input)}`
+    }
+}
+
 export function getNearbyCoords(input, maxWidth, maxHeight) {
     try {
         const [XCoord, YCoord] = [input[0], input[1]]
@@ -41,7 +50,7 @@ export function generateGrid(width, height, numberOfBombs) {
                 const outputTileObject = {
                     coordinates: coords, 
                     surroundingTileCoords: surroundingTiles,
-                    clicked: false
+                    clickState: "none"
                 };
                 outputArray.push(outputTileObject);
             }
