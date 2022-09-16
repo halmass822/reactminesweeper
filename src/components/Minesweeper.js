@@ -117,6 +117,7 @@ export default function Minesweeper() {
                 <div><img className="minesweeperLogo" 
                     src={logoState}
                     onClick={logoClick}
+                    alt="minesweeper face logo"
                     ></img></div>
                 <div><select className="difficultySelector" onChange={handleChangeDifficulty}>
                     <option value="easy">easy</option>
