@@ -19,7 +19,6 @@ export default function Tile(props) {
 
     const displayLogic = () => {
         if(!props.gameRunning){
-            if(props.clickState === "right") return flagImg;
             return props.contents === "B" ? mineImg : props.contents;
         } 
         switch (props.clickState) {

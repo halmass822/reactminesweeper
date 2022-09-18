@@ -63,7 +63,9 @@
 }
 
 .gameBoard div {
-    width: 33%
+    width: 33%;
+    display: flex;
+    justify-content: center;
 }
 
 .minesweeperLogo {
