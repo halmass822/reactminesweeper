@@ -35,7 +35,11 @@ function getRandomCoords(maxWidth, maxHeight, numOfCoords) {
     for (let i = 0; i < numOfCoords; i++) {
         const xCoord = Math.ceil(Math.random() * (maxWidth -0.001));
         const yCoord = Math.ceil(Math.random() * (maxHeight - 0.001));
-        outputArray.push([xCoord,yCoord]);
+        if(!outputArray.find((x) => x[0] === xCoord && x[1] && x[1] === yCoord)){
+            outputArray.push([xCoord,yCoord]);
+        } else {
+            i--
+        }
     }
     return outputArray;
 }
